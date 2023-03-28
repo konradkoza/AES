@@ -282,16 +282,15 @@ public class AES {
             System.arraycopy(block, 0, result, i, 16);
         }
 
-
         return result;
     }
 
     private static byte[] addPadding(byte[] data) {
-        int paddingLength = 16 - (data.length % 16); // calculate number of bytes to pad
-        byte[] paddedData = new byte[data.length + paddingLength]; // create new byte array with padding
-        System.arraycopy(data, 0, paddedData, 0, data.length); // copy original data into padded array
-        byte paddingByte = (byte) paddingLength; // convert padding length to byte value
-        Arrays.fill(paddedData, data.length, paddedData.length, paddingByte); // fill padding bytes with padding length
+        int paddingLength = 16 - (data.length % 16);
+        byte[] paddedData = new byte[data.length + paddingLength];
+        System.arraycopy(data, 0, paddedData, 0, data.length);
+        byte paddingByte = (byte) paddingLength;
+        Arrays.fill(paddedData, data.length, paddedData.length, paddingByte);
         return paddedData;
     }
 
