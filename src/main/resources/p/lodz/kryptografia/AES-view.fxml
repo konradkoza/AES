@@ -9,38 +9,40 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" prefHeight="615.0" prefWidth="686.0" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="p.lodz.kryptografia.AppController">
+<VBox alignment="CENTER" prefHeight="624.0" prefWidth="800.0" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="p.lodz.kryptografia.AppController">
   <padding>
     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
   </padding>
    <children>
       <AnchorPane prefHeight="573.0" prefWidth="646.0">
          <children>
-            <Button fx:id="encryptButton" layoutX="291.0" layoutY="23.0" mnemonicParsing="false" onAction="#onActionEncryptButton" text="Szyfruj" />
+            <Button fx:id="encryptButton" layoutX="354.0" layoutY="190.0" mnemonicParsing="false" onAction="#onActionEncryptButton" text="Szyfruj" />
             <TextArea fx:id="textToEncrypt" layoutY="101.0" prefHeight="282.0" prefWidth="306.0" promptText="Tutaj podaj tekst jawny" wrapText="true" />
-            <TextArea fx:id="textToDecrypt" layoutX="327.0" layoutY="101.0" prefHeight="281.0" prefWidth="306.0" promptText="Tutaj podaj szyfrogram" wrapText="true" />
+            <TextArea fx:id="textToDecrypt" layoutX="435.0" layoutY="102.0" prefHeight="281.0" prefWidth="306.0" promptText="Tutaj podaj szyfrogram" wrapText="true" />
             <Label alignment="CENTER" layoutX="101.0" layoutY="78.0" prefHeight="18.0" prefWidth="103.0" text="Tekst jawny" textAlignment="CENTER" />
             <Label alignment="CENTER" layoutX="418.0" layoutY="78.0" prefHeight="18.0" prefWidth="103.0" text="Szyfrogram" />
-            <Button fx:id="decryptButton" layoutX="284.0" layoutY="56.0" mnemonicParsing="false" onAction="#onActionDecryptButton" text="Deszyfruj" />
-            <TextField fx:id="keyText" layoutX="310.0" layoutY="468.0" prefHeight="26.0" prefWidth="320.0" promptText="Tutaj podaj klucz (zapis szesnastkowym)" />
-            <Label alignment="CENTER" layoutX="402.0" layoutY="438.0" prefHeight="18.0" prefWidth="103.0" text="Klucz" textAlignment="CENTER" />
+            <Button fx:id="decryptButton" layoutX="348.0" layoutY="230.0" mnemonicParsing="false" onAction="#onActionDecryptButton" text="Deszyfruj" />
+            <TextField fx:id="keyText" layoutX="418.0" layoutY="469.0" prefHeight="26.0" prefWidth="320.0" promptText="Tutaj podaj klucz (zapis szesnastkowym)" />
+            <Label alignment="CENTER" layoutX="510.0" layoutY="439.0" prefHeight="18.0" prefWidth="103.0" text="Klucz" textAlignment="CENTER" />
             <Button fx:id="generateKeyButton" layoutX="32.0" layoutY="534.0" mnemonicParsing="false" onAction="#onactionGenerateKey" text="Generuj losowy klucz" />
             <RadioButton fx:id="radioButton128" layoutX="34.0" layoutY="457.0" mnemonicParsing="false" onAction="#handleRadio128" selected="true" text="128-bit" />
             <RadioButton fx:id="radioButton192" layoutX="34.0" layoutY="481.0" mnemonicParsing="false" onAction="#handleRadio192" text="192-bit" />
             <RadioButton fx:id="radioButton256" layoutX="34.0" layoutY="507.0" mnemonicParsing="false" onAction="#handleRadio256" text="256-bit" />
             <Label layoutX="14.0" layoutY="430.0" text="Długość losowo generowanego klucza" />
             <TextField fx:id="fileNameText" editable="false" layoutX="14.0" layoutY="9.0" prefHeight="26.0" prefWidth="240.0" promptText="scieżka pliku do wczytania" />
-            <TextField fx:id="fileNameCipherText" editable="false" layoutX="373.0" layoutY="10.0" prefHeight="26.0" prefWidth="240.0" promptText="ścieżka pliku z szyfrogramem do wczytania" />
+            <TextField fx:id="fileNameCipherText" editable="false" layoutX="481.0" layoutY="11.0" prefHeight="26.0" prefWidth="240.0" promptText="ścieżka pliku z szyfrogramem do wczytania" />
             <Button fx:id="readTextFileButton" layoutX="96.0" layoutY="43.0" mnemonicParsing="false" onAction="#onActionReadTextFileButton" text="wczytaj plik" />
-            <Button fx:id="readCipherTextFileButton" layoutX="454.0" layoutY="43.0" mnemonicParsing="false" onAction="#onActionReadCipherTextFileButton" text="wczytaj plik" />
+            <Button fx:id="readCipherTextFileButton" layoutX="562.0" layoutY="44.0" mnemonicParsing="false" onAction="#onActionReadCipherTextFileButton" text="wczytaj plik" />
             <TextField fx:id="fileNameToSaveText" editable="false" layoutX="2.0" layoutY="389.0" prefHeight="26.0" prefWidth="240.0" promptText="scieżka do zapisania pliku" />
-            <TextField fx:id="fileNameToSaveCipherText" editable="false" layoutX="326.0" layoutY="390.0" prefHeight="26.0" prefWidth="240.0" promptText="scieżka do zapisania pliku" />
+            <TextField fx:id="fileNameToSaveCipherText" editable="false" layoutX="434.0" layoutY="391.0" prefHeight="26.0" prefWidth="240.0" promptText="scieżka do zapisania pliku" />
             <Button fx:id="saveTextToFIleButton" layoutX="242.0" layoutY="389.0" mnemonicParsing="false" onAction="#onActionSaveTextFile" text="zapisz plik" />
-            <Button fx:id="saveCipherTextToFIleButton" layoutX="566.0" layoutY="390.0" mnemonicParsing="false" onAction="#onActionSaveCipherText" text="zapisz plik" />
-            <Button fx:id="readKeyFromFileButton" layoutX="310.0" layoutY="534.0" mnemonicParsing="false" onAction="#onActionReadKeyFromFile" text="Wczytaj klucz z pliku" />
-            <Button fx:id="saveKeyToFileButton" layoutX="310.0" layoutY="500.0" mnemonicParsing="false" onAction="#onActionSaveKeyToFile" text="Zapisz klucz do pliku" />
-            <TextField fx:id="fileNameKeySave" editable="false" layoutX="457.0" layoutY="500.0" prefHeight="26.0" prefWidth="185.0" promptText="ścieżka pliku do zapisania klucza" />
-            <TextField fx:id="fileNameKeyRead" editable="false" layoutX="458.0" layoutY="534.0" prefHeight="26.0" prefWidth="186.0" promptText="ścieżka pliku do wczytania klucza" />
+            <Button fx:id="saveCipherTextToFIleButton" layoutX="674.0" layoutY="391.0" mnemonicParsing="false" onAction="#onActionSaveCipherText" text="zapisz plik" />
+            <Button fx:id="readKeyFromFileButton" layoutX="418.0" layoutY="535.0" mnemonicParsing="false" onAction="#onActionReadKeyFromFile" text="Wczytaj klucz z pliku" />
+            <Button fx:id="saveKeyToFileButton" layoutX="418.0" layoutY="501.0" mnemonicParsing="false" onAction="#onActionSaveKeyToFile" text="Zapisz klucz do pliku" />
+            <TextField fx:id="fileNameKeySave" editable="false" layoutX="565.0" layoutY="501.0" prefHeight="26.0" prefWidth="185.0" promptText="ścieżka pliku do zapisania klucza" />
+            <TextField fx:id="fileNameKeyRead" editable="false" layoutX="566.0" layoutY="535.0" prefHeight="26.0" prefWidth="186.0" promptText="ścieżka pliku do wczytania klucza" />
+            <RadioButton fx:id="fileRadioBox" layoutX="332.0" layoutY="121.0" mnemonicParsing="false" onAction="#handleRadioBoxFile" text="plik" />
+            <RadioButton fx:id="textRadioBox" layoutX="332.0" layoutY="148.0" mnemonicParsing="false" onAction="#handleRadioBoxText" selected="true" text="pole tekstowe" />
          </children>
       </AnchorPane>
    </children>

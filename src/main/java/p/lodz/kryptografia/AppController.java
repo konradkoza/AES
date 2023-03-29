@@ -86,6 +86,12 @@ public class AppController implements Initializable {
     private Button saveKeyToFileButton;
 
     @FXML
+    private RadioButton textRadioBox;
+
+    @FXML
+    private RadioButton fileRadioBox;
+
+    @FXML
     void handleRadio128(ActionEvent event) {
         if(radioButton128.isSelected()){
             radioButton192.selectedProperty().set(false);
@@ -110,10 +116,24 @@ public class AppController implements Initializable {
     }
 
     @FXML
+    void handleRadioBoxFile(ActionEvent event) {
+        if(fileRadioBox.isSelected()){
+            textRadioBox.selectedProperty().set(false);
+        }
+    }
+
+    @FXML
+    void handleRadioBoxText(ActionEvent event) {
+        if(textRadioBox.isSelected()){
+            fileRadioBox.selectedProperty().set(false);
+        }
+    }
+
+    @FXML
     void onActionReadCipherTextFileButton(ActionEvent event) {
 
 
-        fileChooser.getExtensionFilters().addAll(
+        fileChooser.getExtensionFilters().setAll(
                 new FileChooser.ExtensionFilter("ALL FILES", "*.*"));
         File file = fileChooser.showOpenDialog(null);
         if(file != null) {
@@ -131,7 +151,7 @@ public class AppController implements Initializable {
     @FXML
     void onActionReadTextFileButton(ActionEvent event) {
 
-        fileChooser.getExtensionFilters().addAll(
+        fileChooser.getExtensionFilters().setAll(
                 new FileChooser.ExtensionFilter("ALL FILES", "*.*"));
         File file = fileChooser.showOpenDialog(null);
         if(file != null) {
@@ -148,7 +168,7 @@ public class AppController implements Initializable {
     @FXML
     void onActionReadKeyFromFile(ActionEvent event) {
 
-        fileChooser.getExtensionFilters().addAll(
+        fileChooser.getExtensionFilters().setAll(
                 new FileChooser.ExtensionFilter("AES KEY", "*.aes"));
         File file = fileChooser.showOpenDialog(null);
         if(file != null){
@@ -165,13 +185,17 @@ public class AppController implements Initializable {
     @FXML
     void onActionSaveKeyToFile(ActionEvent event) {
 
-        fileChooser.getExtensionFilters().addAll(
+        fileChooser.getExtensionFilters().setAll(
                 new FileChooser.ExtensionFilter("AES KEY", "*.aes"));
         File file = fileChooser.showOpenDialog(null);
         if(file != null){
             fileNameKeySave.setText(file.getAbsolutePath());
             try {
-                Helper.saveFile(Helper.hexToBytes(keyText.getText()), file.getAbsolutePath());
+                if(!keyText.getText().isEmpty() && checkKeySize()) {
+                    Helper.saveFile(Helper.hexToBytes(keyText.getText()), file.getAbsolutePath());
+                } else {
+                    AlertWindow.messageWindow("Błąd zapisu", "Brak danych do zapisania w pliku", Alert.AlertType.WARNING);
+                }
             } catch (FileException e) {
                 AlertWindow.messageWindow("Błąd pliku", "Błąd podczas zapisywania pliku", Alert.AlertType.WARNING);
             }
@@ -181,16 +205,28 @@ public class AppController implements Initializable {
     @FXML
     void onActionSaveCipherText(ActionEvent event) {
 
-        fileChooser.getExtensionFilters().addAll(
+        fileChooser.getExtensionFilters().setAll(
                 new FileChooser.ExtensionFilter("ALL FILES", "*.*"));
         File file = fileChooser.showOpenDialog(null);
         if(file != null){
             fileNameToSaveCipherText.setText(file.getAbsolutePath());
             try {
-                if(text != null){
-                    Helper.saveFile(cipherText,file.getAbsolutePath());
+                if(fileRadioBox.isSelected()){
+                    if (cipherText != null){
+                        Helper.saveFile(cipherText,file.getAbsolutePath());
+                    } else if(!textToDecrypt.getText().isEmpty()) {
+                        Helper.saveFile(Helper.hexToBytes(textToDecrypt.getText()),file.getAbsolutePath());
+                    } else {
+                        AlertWindow.messageWindow("Błąd zapisu", "Brak danych do zapisania w pliku", Alert.AlertType.WARNING);
+                    }
+
                 } else {
-                    Helper.saveFile(Helper.hexToBytes(textToDecrypt.getText()),file.getAbsolutePath());
+                    if(!textToDecrypt.getText().isEmpty()){
+                        Helper.saveFile(Helper.hexToBytes(textToDecrypt.getText()),file.getAbsolutePath());
+                    } else {
+                        AlertWindow.messageWindow("Błąd zapisu", "Brak danych do zapisania w pliku", Alert.AlertType.WARNING);
+                    }
+
                 }
             } catch (FileException e) {
                 AlertWindow.messageWindow("Błąd pliku", "Błąd podczas zapisywania pliku", Alert.AlertType.WARNING);
@@ -208,10 +244,21 @@ public class AppController implements Initializable {
         if(file != null){
             fileNameToSaveText.setText(file.getAbsolutePath());
             try {
-                if(text != null){
-                    Helper.saveFile(text,file.getAbsolutePath());
+                if(fileRadioBox.isSelected()){
+                    if (text != null){
+                        Helper.saveFile(text,file.getAbsolutePath());
+                    } else if(!textToEncrypt.getText().isEmpty()) {
+                        Helper.saveFile(textToEncrypt.getText().getBytes(),file.getAbsolutePath());
+                    } else {
+                        AlertWindow.messageWindow("Błąd zapisu", "Brak danych do zapisania w pliku", Alert.AlertType.WARNING);
+                    }
+
                 } else {
-                    Helper.saveFile(textToEncrypt.getText().getBytes(),file.getAbsolutePath());
+                    if(!textToEncrypt.getText().isEmpty()){
+                        Helper.saveFile(textToEncrypt.getText().getBytes(),file.getAbsolutePath());
+                    } else {
+                        AlertWindow.messageWindow("Błąd zapisu", "Brak danych do zapisania w pliku", Alert.AlertType.WARNING);
+                    }
                 }
 
             } catch (FileException e) {
@@ -224,17 +271,20 @@ public class AppController implements Initializable {
     @FXML
     void onActionEncryptButton(ActionEvent event) {
         if(checkKeySize()) {
-            if(!textToEncrypt.getText().isEmpty()){
+            if(fileRadioBox.isSelected()){
                 byte[] keyBytes = Helper.hexToBytes(keyText.getText());
-                if(text.length == 0) {
-                    cipherText = aes.encrypt(textToEncrypt.getText().getBytes(StandardCharsets.UTF_8), keyBytes);
-                } else {
-                    cipherText = aes.encrypt(text, keyBytes);
-                }
+                cipherText = aes.encrypt(text, keyBytes);
                 textToDecrypt.setText(Helper.bytesToHex(cipherText));
             } else {
-                AlertWindow.messageWindow("Błąd", "Pole z wiadomością do odszyfrowania jest puste", Alert.AlertType.ERROR);
+                if(!textToEncrypt.getText().isEmpty()){
+                    byte[] keyBytes = Helper.hexToBytes(keyText.getText());
+                    cipherText = aes.encrypt(textToEncrypt.getText().getBytes(), keyBytes);
+                    textToDecrypt.setText(Helper.bytesToHex(cipherText));
+                } else {
+                    AlertWindow.messageWindow("Błąd", "Pole z wiadomością do odszyfrowania jest puste", Alert.AlertType.ERROR);
+                }
             }
+
 
         }
 
@@ -243,13 +293,20 @@ public class AppController implements Initializable {
     @FXML
     void onActionDecryptButton(ActionEvent event) {
         if(checkKeySize()) {
-            if (!textToDecrypt.getText().isEmpty()) {
+            if(fileRadioBox.isSelected()){
                 byte[] keyBytes = Helper.hexToBytes(keyText.getText());
-                text = aes.decrypt(Helper.hexToBytes(textToDecrypt.getText()), keyBytes);
+                text = aes.decrypt(cipherText, keyBytes);
                 textToEncrypt.setText(new String(text));
             } else {
-                AlertWindow.messageWindow("Błąd", "Pole z wiadomością do odszyfrowania jest puste", Alert.AlertType.ERROR);
+                if (!textToDecrypt.getText().isEmpty()) {
+                    byte[] keyBytes = Helper.hexToBytes(keyText.getText());
+                    text = aes.decrypt(Helper.hexToBytes(textToDecrypt.getText()), keyBytes);
+                    textToEncrypt.setText(new String(text));
+                } else {
+                    AlertWindow.messageWindow("Błąd", "Pole z wiadomością do odszyfrowania jest puste", Alert.AlertType.ERROR);
+                }
             }
+
 
         }
 
