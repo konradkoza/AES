@@ -198,6 +198,8 @@ public class AppController implements Initializable {
                 }
             } catch (FileException e) {
                 AlertWindow.messageWindow("Błąd pliku", "Błąd podczas zapisywania pliku", Alert.AlertType.WARNING);
+            } catch (HexStringException e) {
+                AlertWindow.messageWindow("Błąd pliku", e.getMessage(), Alert.AlertType.ERROR);
             }
         }
     }
@@ -230,6 +232,8 @@ public class AppController implements Initializable {
                 }
             } catch (FileException e) {
                 AlertWindow.messageWindow("Błąd pliku", "Błąd podczas zapisywania pliku", Alert.AlertType.WARNING);
+            } catch (HexStringException e) {
+                AlertWindow.messageWindow("Błąd pliku", e.getMessage(), Alert.AlertType.ERROR);
             }
         }
 
@@ -273,7 +277,12 @@ public class AppController implements Initializable {
         if(aes.checkKeySize(keyText.getText())) {
             if(fileRadioBox.isSelected()){
                 if (!(text == null)) {
-                    byte[] keyBytes = Helper.hexToBytes(keyText.getText());
+                    byte[] keyBytes = new byte[0];
+                    try {
+                        keyBytes = Helper.hexToBytes(keyText.getText());
+                    } catch (HexStringException e) {
+                        AlertWindow.messageWindow("Błąd pliku", e.getMessage(), Alert.AlertType.ERROR);
+                    }
                     cipherText = aes.encrypt(text, keyBytes);
                     textToDecrypt.setText(Helper.bytesToHex(cipherText));
                 } else {
@@ -281,7 +290,12 @@ public class AppController implements Initializable {
                 }
             } else if (textRadioBox.isSelected()){
                 if(!textToEncrypt.getText().isEmpty()){
-                    byte[] keyBytes = Helper.hexToBytes(keyText.getText());
+                    byte[] keyBytes = new byte[0];
+                    try {
+                        keyBytes = Helper.hexToBytes(keyText.getText());
+                    } catch (HexStringException e) {
+                        AlertWindow.messageWindow("Błąd pliku", e.getMessage(), Alert.AlertType.ERROR);
+                    }
                     cipherText = aes.encrypt(textToEncrypt.getText().getBytes(), keyBytes);
                     textToDecrypt.setText(Helper.bytesToHex(cipherText));
                 } else {
@@ -301,17 +315,28 @@ public class AppController implements Initializable {
         if(aes.checkKeySize(keyText.getText())) {
             if(fileRadioBox.isSelected()){
                 if (!(cipherText == null)) {
-                    byte[] keyBytes = Helper.hexToBytes(keyText.getText());
-                    text = aes.decrypt(cipherText, keyBytes);
-                    textToEncrypt.setText(new String(text));
+                    try {
+                        byte[] keyBytes = Helper.hexToBytes(keyText.getText());
+                        text = aes.decrypt(cipherText, keyBytes);
+                        textToEncrypt.setText(new String(text));
+                    } catch (AES.AESException | HexStringException e) {
+                        AlertWindow.messageWindow("Błąd", e.getMessage(), Alert.AlertType.ERROR);
+                    }
+
                 } else {
                     AlertWindow.messageWindow("Błąd", "Nie wczytano pliku do odszyfrowania", Alert.AlertType.ERROR);
                 }
             } else if (textRadioBox.isSelected()) {
                 if (!textToDecrypt.getText().isEmpty()) {
-                    byte[] keyBytes = Helper.hexToBytes(keyText.getText());
-                    text = aes.decrypt(Helper.hexToBytes(textToDecrypt.getText()), keyBytes);
-                    textToEncrypt.setText(new String(text));
+
+                    try {
+                        byte[] keyBytes = Helper.hexToBytes(keyText.getText());
+                        text = aes.decrypt(Helper.hexToBytes(textToDecrypt.getText()), keyBytes);
+                        textToEncrypt.setText(new String(text));
+                    } catch (AES.AESException | HexStringException e) {
+                        AlertWindow.messageWindow("Błąd", e.getMessage(), Alert.AlertType.ERROR);
+                    }
+
                 } else {
                     AlertWindow.messageWindow("Błąd", "Pole z wiadomością do odszyfrowania jest puste", Alert.AlertType.ERROR);
                 }
@@ -319,7 +344,7 @@ public class AppController implements Initializable {
 
 
         } else {
-            AlertWindow.messageWindow("Błąd", "Zład długość klucza", Alert.AlertType.ERROR);
+            AlertWindow.messageWindow("Błąd", "Zła długość klucza", Alert.AlertType.ERROR);
         }
 
     }
@@ -345,6 +370,15 @@ public class AppController implements Initializable {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if(!(newValue.matches("^[A-Fa-f0-9]+$") || newValue.equals(""))){
                     keyText.setText(oldValue);
+                }
+            }
+        });
+
+        textToDecrypt.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if(!(newValue.matches("^[A-Fa-f0-9]+$") || newValue.equals(""))){
+                    textToDecrypt.setText(oldValue);
                 }
             }
         });

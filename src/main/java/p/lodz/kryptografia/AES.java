@@ -304,7 +304,10 @@ public class AES {
         return paddedData;
     }
 
-    public byte[] decrypt(byte[] ciphertext, byte[] key) {
+    public byte[] decrypt(byte[] ciphertext, byte[] key) throws AESException {
+        if(ciphertext.length % 16 != 0 ){
+            throw new AESException("Długość sszyfrogramu nie jest wielokrotnością bloku");
+        }
         byte[] temp = new byte[ciphertext.length];
         byte[] block = new byte[16];
         Nk = key.length / 4;

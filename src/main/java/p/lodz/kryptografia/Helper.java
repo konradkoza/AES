@@ -11,6 +11,7 @@ import java.util.Random;
 public class Helper {
 
 
+
     static public String getRandomHexString(int numchars){
         Random r = new Random();
         StringBuffer sb = new StringBuffer();
@@ -43,7 +44,10 @@ public class Helper {
         }
     }
 
-    static public byte[] hexToBytes(String text) {
+    static public byte[] hexToBytes(String text) throws HexStringException {
+        if (text.length() % 2 != 0){
+            throw new HexStringException("Zła długość szyfrogramu");
+        }
         int len = text.length()/2;
         byte[] bytes = new byte[len];
         for (int i = 0; i < text.length(); i++) {
