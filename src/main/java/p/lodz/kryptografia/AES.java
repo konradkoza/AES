@@ -1,12 +1,22 @@
 package p.lodz.kryptografia;
 
+import javafx.scene.control.Alert;
+
 import java.util.Arrays;
 
 
 public class AES {
+
+    class AESException extends Exception{
+
+        public  AESException(String msg){
+            super(msg);
+        }
+
+    }
+
     private byte[][] roundKeys;
     private int Nb = 4, Nk, Nr;
-
 
     private final int[] sbox = {0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F,
             0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76, 0xCA, 0x82,
@@ -314,5 +324,11 @@ public class AES {
     private static byte[] removePadding(byte[] decoded) {
         int paddingCount = decoded[decoded.length-1];
         return Arrays.copyOfRange(decoded, 0, decoded.length - paddingCount);
+    }
+
+
+    public boolean checkKeySize(String key) {
+        int len = key.length();
+        return len == 32 || len == 48 || len == 64;
     }
 }

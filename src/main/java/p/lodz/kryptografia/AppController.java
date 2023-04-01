@@ -191,10 +191,10 @@ public class AppController implements Initializable {
         if(file != null){
             fileNameKeySave.setText(file.getAbsolutePath());
             try {
-                if(!keyText.getText().isEmpty() && checkKeySize()) {
+                if(!keyText.getText().isEmpty() && aes.checkKeySize(keyText.getText())) {
                     Helper.saveFile(Helper.hexToBytes(keyText.getText()), file.getAbsolutePath());
                 } else {
-                    AlertWindow.messageWindow("Błąd zapisu", "Brak danych do zapisania w pliku", Alert.AlertType.WARNING);
+                    AlertWindow.messageWindow("Błąd zapisu", "Nieprawidłowa długość klucza", Alert.AlertType.WARNING);
                 }
             } catch (FileException e) {
                 AlertWindow.messageWindow("Błąd pliku", "Błąd podczas zapisywania pliku", Alert.AlertType.WARNING);
@@ -238,7 +238,7 @@ public class AppController implements Initializable {
     @FXML
     void onActionSaveTextFile(ActionEvent event) {
 
-        fileChooser.getExtensionFilters().addAll(
+        fileChooser.getExtensionFilters().setAll(
                 new FileChooser.ExtensionFilter("ALL FILES", "*.*"));
         File file = fileChooser.showOpenDialog(null);
         if(file != null){
@@ -270,12 +270,16 @@ public class AppController implements Initializable {
 
     @FXML
     void onActionEncryptButton(ActionEvent event) {
-        if(checkKeySize()) {
+        if(aes.checkKeySize(keyText.getText())) {
             if(fileRadioBox.isSelected()){
-                byte[] keyBytes = Helper.hexToBytes(keyText.getText());
-                cipherText = aes.encrypt(text, keyBytes);
-                textToDecrypt.setText(Helper.bytesToHex(cipherText));
-            } else {
+                if (!(text == null)) {
+                    byte[] keyBytes = Helper.hexToBytes(keyText.getText());
+                    cipherText = aes.encrypt(text, keyBytes);
+                    textToDecrypt.setText(Helper.bytesToHex(cipherText));
+                } else {
+                    AlertWindow.messageWindow("Błąd", "Nie wczytano pliku do zaszyfrowania", Alert.AlertType.ERROR);
+                }
+            } else if (textRadioBox.isSelected()){
                 if(!textToEncrypt.getText().isEmpty()){
                     byte[] keyBytes = Helper.hexToBytes(keyText.getText());
                     cipherText = aes.encrypt(textToEncrypt.getText().getBytes(), keyBytes);
@@ -286,18 +290,24 @@ public class AppController implements Initializable {
             }
 
 
+        } else {
+            AlertWindow.messageWindow("Błąd", "Zład długość klucza", Alert.AlertType.ERROR);
         }
 
     }
 
     @FXML
     void onActionDecryptButton(ActionEvent event) {
-        if(checkKeySize()) {
+        if(aes.checkKeySize(keyText.getText())) {
             if(fileRadioBox.isSelected()){
-                byte[] keyBytes = Helper.hexToBytes(keyText.getText());
-                text = aes.decrypt(cipherText, keyBytes);
-                textToEncrypt.setText(new String(text));
-            } else {
+                if (!(cipherText == null)) {
+                    byte[] keyBytes = Helper.hexToBytes(keyText.getText());
+                    text = aes.decrypt(cipherText, keyBytes);
+                    textToEncrypt.setText(new String(text));
+                } else {
+                    AlertWindow.messageWindow("Błąd", "Nie wczytano pliku do odszyfrowania", Alert.AlertType.ERROR);
+                }
+            } else if (textRadioBox.isSelected()) {
                 if (!textToDecrypt.getText().isEmpty()) {
                     byte[] keyBytes = Helper.hexToBytes(keyText.getText());
                     text = aes.decrypt(Helper.hexToBytes(textToDecrypt.getText()), keyBytes);
@@ -308,10 +318,11 @@ public class AppController implements Initializable {
             }
 
 
+        } else {
+            AlertWindow.messageWindow("Błąd", "Zład długość klucza", Alert.AlertType.ERROR);
         }
 
     }
-
 
     @FXML
     void onactionGenerateKey(ActionEvent event) {
@@ -323,29 +334,8 @@ public class AppController implements Initializable {
         } else {
             keysize = 64;
         }
-        keyText.setText(getRandomHexString(keysize));
+        keyText.setText(Helper.getRandomHexString(keysize));
     }
-
-    boolean checkKeySize() {
-        int len = keyText.getText().length();
-
-        if(len != 32 & len != 48 & len != 64){
-            AlertWindow.messageWindow("Błąd", "Zład długość klucza", Alert.AlertType.ERROR);
-            return false;
-        }
-        return true;
-    }
-
-    private String getRandomHexString(int numchars){
-        Random r = new Random();
-        StringBuffer sb = new StringBuffer();
-        while(sb.length() < numchars){
-            sb.append(Integer.toHexString(r.nextInt()));
-        }
-
-        return sb.toString().substring(0, numchars);
-    }
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
